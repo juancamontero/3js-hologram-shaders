@@ -1,14 +1,13 @@
 uniform float uTime;
 
+//* 1 Stripes
 //? to use instead of the uv coords, using modelPosition 
 varying vec3 vPosition;
 
 //? to be used to generate FRESNEL
 varying vec3 vNormal;
 
-float random2D(vec2 value) {
-    return fract(sin(dot(value.xy, vec2(12.9898, 78.233))) * 43758.5453123);
-}
+#include ../includes/radom2d.glsl
 
 void main() {
 // Position,
@@ -38,8 +37,12 @@ void main() {
 
     //? move from the bottom to the top, we are going to subtract modelPosition.y from uTime:
     float glitchTime = uTime - modelPosition.y;
+    
+    //? so the glitchStrength goes to 0 to 1 according to time
     // float glitchStrength = sin(glitchTime);
-      float glitchStrength = sin(glitchTime) + sin(glitchTime * 2.34) +  sin(glitchTime * 5.67);
+
+   //? suma varios senos con diferente frecuencias para somular "random" en el tiempo
+    float glitchStrength = sin(glitchTime) + sin(glitchTime * 2.34) + sin(glitchTime * 5.67);
     glitchStrength /= 3.0;
 
     //? We want the effect to appear less often and we need to remap it. We are going to use the usual smoothstep:
@@ -49,7 +52,7 @@ void main() {
     modelPosition.x += (random2D(modelPosition.xz + uTime) - 0.5) * glitchStrength;
     modelPosition.z += (random2D(modelPosition.zx + uTime) - 0.5) * glitchStrength;
 
-    // Final position
+    //! Final position
 
     gl_Position = projectionMatrix * viewMatrix * modelPosition;
 
@@ -58,7 +61,7 @@ void main() {
      //? in this way the patterns will adjust the object transfomation
     // vPosition = position.xyz; 
     //? in this way the patterns will adjust the worls space transfomation
-    vPosition = modelPosition.xyz;
+    vPosition = modelPosition.xyz; //! modelPosition is a vec4
 
         //* 5 Fix the normal orientation
     //* model noraml
@@ -70,6 +73,8 @@ void main() {
     //?When the fourth value is set to 0.0, it means that our vector is not homogeneous and the translation won’t be applied, 
     //?which is ideal in the case of a normal, because the normal is not a position, it’s a direction.
 
+    //? cuando el 4to valor es 1 es un vector homogéneo, se aplican scale, translate & rotaion igual, con 0 es no-homogeneo y translate no se aplica, que es ideal para las normales, porque las normales son posicione no direcciones
     vec4 modelNormal = modelMatrix * vec4(normal, 0.0);
-    vNormal = modelNormal.xyz;
+    // vNormal = normal; 
+    vNormal = modelNormal.xyz; //use this so the normal does not roate with the model
 }

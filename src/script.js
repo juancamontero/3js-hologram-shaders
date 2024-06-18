@@ -64,7 +64,7 @@ controls.enableDamping = true
  * Renderer
  */
 const rendererParameters = {}
-rendererParameters.clearColor = '#1d1f2a'
+rendererParameters.clearColor = '#390047'
 
 const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
@@ -83,9 +83,10 @@ gui.addColor(rendererParameters, 'clearColor').onChange(() => {
  *
  */
 
+// *10 color
 // *11 tweaks
 const materialParameters = {}
-materialParameters.color = '#70c1ff'
+materialParameters.color = '#37ff00'
 
 const material = new THREE.ShaderMaterial({
   vertexShader: holographicVertexShader,

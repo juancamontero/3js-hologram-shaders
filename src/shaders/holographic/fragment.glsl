@@ -2,6 +2,7 @@ uniform float uTime;
 // * 10 color
 uniform vec3 uColor;
 
+//* 1 Stripes 
 //? to use instead of the uv coords, using modelPosition
 varying vec3 vPosition;
 
@@ -20,7 +21,7 @@ void main() {
 
 //* 2 Animation
 //?make ths stripes move on Y with time
-    float stripes = mod((vPosition.y - uTime * 0.02) * 20.0, 1.0); 
+    float stripes = mod((vPosition.y - uTime * 0.04) * 20.0, 1.0); 
 
 //? apply a pow to take long to "take off"
     stripes = pow(stripes, 3.0);
@@ -30,13 +31,15 @@ void main() {
 
 //* 3 Alpha
 //?Until now, we have been using the stripes as the color. Let’s try it on the alpha of gl_FragColor and set the rest to 1.0:
+//! enable transparent on material script: transparent: true,
     // gl_FragColor = vec4(1.0, 1.0, 1.0, stripes);
 
-// *4  FERNEL
+// *4  FRESNEL
 //? Most of the time, holograms are represented with their outside looking brighter than the inside.
 //? We can do that using the normal and the view angle.
 //? We want a value to be 1.0 when the view angle is perpendicular to normal,
 //? and 0.0 when the view angle is aligned with the normal: This effect is called “Fresnel”.
+//? Si lo miro de frente lo veo medio transparente, pero veo los bordes del resto del modelo
 
 // * Dot product
 // ? the view vector is the vector from the CAMERA(cameraPosition uniform) to the VERTEX
@@ -57,7 +60,7 @@ void main() {
  //* 5 Fix the normal orientation - start on vetx shader
  // Normal
 
- //? the normal lenght isn't 1 'cause the varyng are being onterpolate and when the dot func is applied not always a 1 isthe result
+ //? the normal lenght isn't 1 'cause the varyng are being interpolate and when the dot func is applied not always a 1 isthe result
  //? so a little gris pattern is visible
     vec3 normal = normalize(vNormal);
 
@@ -71,7 +74,8 @@ void main() {
 
 //* Power
 //? Let’s apply a power to the fresnel to make it sharper using the pow function:
-    fresnel = pow(fresnel, 2.0);
+//? the higyer the pow, the darker/transparent the center of the model
+    fresnel = pow(fresnel, 1.75);
 
 // * 7 Combine with sriptes
 //?  holographic, which will be the final variable we use on the alpha of gl_FragColor and assign stripes to it, multiplieby fresnel:
